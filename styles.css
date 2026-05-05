@@ -6,7 +6,7 @@ body {
 }
 
 main {
-  max-width: 960px;
+  max-width: 1180px;
   margin: 24px auto;
   padding: 0 16px;
 }
@@ -21,11 +21,28 @@ p {
   color: #4b5563;
 }
 
-#chart {
+#dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.chart-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 10px;
+  padding: 10px 12px 12px;
+}
+
+.chart-card h2 {
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+
+.chart-card .subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 8px;
 }
 
 .axis path,
@@ -50,4 +67,54 @@ p {
 .label {
   font-size: 12px;
   fill: #374151;
+}
+
+.zero-line {
+  stroke: #9ca3af;
+  stroke-dasharray: 4 3;
+}
+
+.bar {
+  fill: #3b82f6;
+}
+
+.bar-negative {
+  fill: #93c5fd;
+}
+
+.hist-bar {
+  fill: #60a5fa;
+}
+
+.delta-positive {
+  fill: #ef4444;
+}
+
+.delta-negative {
+  fill: #3b82f6;
+}
+
+.data-point {
+  cursor: pointer;
+  transition: opacity 120ms ease;
+}
+
+.data-point:hover {
+  opacity: 0.75;
+}
+
+.tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: #111827;
+  color: #f9fafb;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  z-index: 30;
 }
