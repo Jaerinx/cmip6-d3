@@ -1,0 +1,53 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fbfdff;
+  color: #1f2937;
+}
+
+main {
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  margin-bottom: 8px;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: #4b5563;
+}
+
+#chart {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.axis path,
+.axis line {
+  stroke: #9ca3af;
+}
+
+.grid line {
+  stroke: #e5e7eb;
+}
+
+.line {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 2.5;
+}
+
+.dot {
+  fill: #ef4444;
+}
+
+.label {
+  font-size: 12px;
+  fill: #374151;
+}
