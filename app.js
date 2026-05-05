@@ -79,6 +79,34 @@ function addAxisLabels(svg, xLabel, yLabel) {
     .text(yLabel);
 }
 
+function getTooltip() {
+  let tip = d3.select("body").select(".tooltip");
+  if (tip.empty()) {
+    tip = d3.select("body").append("div").attr("class", "tooltip");
+  }
+  return tip;
+}
+
+function bindTooltip(selection, contentFn) {
+  const tip = getTooltip();
+  selection
+    .attr("class", function () {
+      const prev = d3.select(this).attr("class") || "";
+      return `${prev} data-point`.trim();
+    })
+    .on("mousemove", (event, d) => {
+      tip
+        .style("opacity", 1)
+        .style("transform", "translateY(0)")
+        .style("left", `${event.clientX + 12}px`)
+        .style("top", `${event.clientY - 14}px`)
+        .html(contentFn(d));
+    })
+    .on("mouseleave", () => {
+      tip.style("opacity", 0).style("transform", "translateY(2px)");
+    });
+}
+
 function renderLineChart(root, cleaned) {
   const svg = createCard(root, "1) Yearly Anomaly (Line)", "Trend over time");
   const x = d3
@@ -109,6 +137,17 @@ function renderLineChart(root, cleaned) {
     .y((d) => y(d.anomaly_c));
 
   svg.append("path").datum(cleaned).attr("class", "line").attr("d", line);
+  const points = svg
+    .selectAll(".line-point")
+    .data(cleaned)
+    .enter()
+    .append("circle")
+    .attr("class", "line-point")
+    .attr("r", 2.6)
+    .attr("cx", (d) => x(d.year))
+    .attr("cy", (d) => y(d.anomaly_c))
+    .attr("fill", "#dc2626");
+  bindTooltip(points, (d) => `Year: <b>${d.year}</b><br/>Anomaly: <b>${d.anomaly_c.toFixed(3)} °C</b>`);
   addAxisLabels(svg, "Year", "Anomaly (°C)");
 }
 
@@ -158,7 +197,7 @@ function renderDecadeBarChart(root, cleaned) {
     .attr("y1", y(0))
     .attr("y2", y(0));
 
-  svg
+  const bars = svg
     .selectAll(".decade-bar")
     .data(decadeData)
     .enter()
@@ -168,6 +207,7 @@ function renderDecadeBarChart(root, cleaned) {
     .attr("y", (d) => Math.min(y(0), y(d.mean)))
     .attr("height", (d) => Math.abs(y(d.mean) - y(0)))
     .attr("width", x.bandwidth());
+  bindTooltip(bars, (d) => `Decade: <b>${d.decade}s</b><br/>Mean anomaly: <b>${d.mean.toFixed(3)} °C</b>`);
   addAxisLabels(svg, "Decade", "Mean anomaly (°C)");
 }
 
@@ -207,6 +247,17 @@ function renderRollingMeanChart(root, cleaned) {
     .attr("stroke", "#8b5cf6")
     .attr("stroke-width", 2.5)
     .attr("d", line);
+  const points = svg
+    .selectAll(".rolling-point")
+    .data(rolling)
+    .enter()
+    .append("circle")
+    .attr("class", "rolling-point")
+    .attr("r", 2.4)
+    .attr("cx", (d) => x(d.year))
+    .attr("cy", (d) => y(d.rolling))
+    .attr("fill", "#7c3aed");
+  bindTooltip(points, (d) => `Year: <b>${d.year}</b><br/>10yr mean: <b>${d.rolling.toFixed(3)} °C</b>`);
   addAxisLabels(svg, "Year", "10-year mean (°C)");
 }
 
@@ -229,7 +280,7 @@ function renderHistogram(root, cleaned) {
   addYGrid(svg, y);
   addAxes(svg, x, y);
 
-  svg
+  const bars = svg
     .selectAll(".hist")
     .data(bins)
     .enter()
@@ -239,6 +290,11 @@ function renderHistogram(root, cleaned) {
     .attr("y", (d) => y(d.length))
     .attr("width", (d) => Math.max(0, x(d.x1) - x(d.x0) - 2))
     .attr("height", (d) => y(0) - y(d.length));
+  bindTooltip(
+    bars,
+    (d) =>
+      `Bin: <b>${d.x0.toFixed(2)} to ${d.x1.toFixed(2)} °C</b><br/>Count: <b>${d.length}</b>`
+  );
   addAxisLabels(svg, "Anomaly (°C)", "Count");
 }
 
@@ -272,7 +328,7 @@ function renderYearlyChangeChart(root, cleaned) {
     .attr("y1", y(0))
     .attr("y2", y(0));
 
-  svg
+  const bars = svg
     .selectAll(".delta-bar")
     .data(deltas)
     .enter()
@@ -282,6 +338,7 @@ function renderYearlyChangeChart(root, cleaned) {
     .attr("width", 2.8)
     .attr("y", (d) => Math.min(y(0), y(d.delta)))
     .attr("height", (d) => Math.abs(y(d.delta) - y(0)));
+  bindTooltip(bars, (d) => `Year: <b>${d.year}</b><br/>Delta: <b>${d.delta.toFixed(3)} °C</b>`);
   addAxisLabels(svg, "Year", "Delta anomaly (°C)");
 }
 
@@ -310,7 +367,7 @@ function renderWarmestYearsChart(root, cleaned) {
     .attr("transform", `translate(${margin.left},0)`)
     .call(d3.axisLeft(y).tickFormat(d3.format("d")));
 
-  svg
+  const bars = svg
     .selectAll(".warmest-bar")
     .data(top)
     .enter()
@@ -330,6 +387,7 @@ function renderWarmestYearsChart(root, cleaned) {
     .attr("x", (d) => x(d.anomaly_c) + 4)
     .attr("y", (d) => y(d.year) + y.bandwidth() / 2 + 4)
     .text((d) => d.anomaly_c.toFixed(2));
+  bindTooltip(bars, (d) => `Year: <b>${d.year}</b><br/>Anomaly: <b>${d.anomaly_c.toFixed(3)} °C</b>`);
   addAxisLabels(svg, "Anomaly (°C)", "Year");
 }
 
