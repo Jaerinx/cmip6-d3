@@ -13,9 +13,9 @@ const SAMP_PATH = "./data/cmip6_sample.csv";
 // ─── State ────────────────────────────────────────────────────────────────────
 let allData    = [];
 let dataMap    = new Map();
-let windowSize = 30;
-let showThresh = false;
-let brushYears = null;
+let windowSize    = 30;
+let showThresh    = false;
+let brushYears    = null;
 
 // ─── Scales / generators ──────────────────────────────────────────────────────
 let xMain, yMain, xStripe;
@@ -28,7 +28,7 @@ let crosshairLine, tempDot;
 let threshLine, threshLabel;
 let zeroLine, zeroLabel;
 let mainBrush, mainBrushG;
-let stripeHoverLine, stripeSelectionRect, stripesRects;
+let stripeHoverLine, stripeLeftBracket, stripeRightBracket, stripesRects;
 let histSvg, histXAxisG, histYAxisG;
 let tipDiv;
 
@@ -103,7 +103,7 @@ function buildMain(root) {
     .text("pre-industrial baseline");
 
   threshLine  = g.append("line").attr("class", "thresh-line");
-  threshLabel = g.append("text").attr("class", "thresh-label");
+  threshLabel = g.append("text").attr("class", "thresh-label").attr("text-anchor", "end");
 
   rawPath  = g.append("path").attr("class", "line raw-line")
     .attr("clip-path", "url(#main-clip)");
@@ -221,9 +221,10 @@ function buildStripes(root) {
     .attr("stroke-width", 1)
     .style("pointer-events", "none");
 
-  // Selection highlight mirror
-  stripeSelectionRect = svg.append("rect").attr("class", "stripe-selection")
-    .attr("y", 0).attr("height", STRIPES_H)
+  // Bracket markers at selection edges
+  stripeLeftBracket = svg.append("path").attr("class", "stripe-bracket")
+    .style("display", "none").style("pointer-events", "none");
+  stripeRightBracket = svg.append("path").attr("class", "stripe-bracket")
     .style("display", "none").style("pointer-events", "none");
 
   stripeHoverLine = svg.append("rect").attr("class", "stripe-hover-line")
@@ -242,15 +243,23 @@ function buildStripes(root) {
 // ─── Update: stripe selection highlight ───────────────────────────────────────
 function updateStripeHighlight() {
   if (!brushYears) {
-    stripeSelectionRect.style("display", "none");
+    stripeLeftBracket.style("display", "none");
+    stripeRightBracket.style("display", "none");
     stripesRects.attr("opacity", 1);
     return;
   }
   const x0 = xStripe(brushYears[0]);
   const x1 = xStripe(brushYears[1]);
-  stripeSelectionRect
-    .attr("x", x0).attr("width", Math.max(0, x1 - x0))
+  const h  = STRIPES_H;
+  const c  = 7; // cap length
+
+  stripeLeftBracket
+    .attr("d", `M${x0 + c},0 L${x0},0 L${x0},${h} L${x0 + c},${h}`)
     .style("display", null);
+  stripeRightBracket
+    .attr("d", `M${x1 - c},0 L${x1},0 L${x1},${h} L${x1 - c},${h}`)
+    .style("display", null);
+
   stripesRects.attr("opacity", d =>
     (d.year >= brushYears[0] && d.year <= brushYears[1]) ? 1 : 0.3
   );
@@ -295,7 +304,7 @@ function updateMain() {
     .attr("y1", yMain(1.5)).attr("y2", yMain(1.5))
     .style("display", showThresh ? null : "none");
   threshLabel
-    .attr("x", M.left + 6).attr("y", yMain(1.5) - 5)
+    .attr("x", MAIN_W - M.right - 4).attr("y", yMain(1.5) + 12)
     .text("Paris Agreement target")
     .style("display", showThresh ? null : "none");
 
@@ -435,7 +444,7 @@ function init(csv) {
   buildMain(root);
 
   root.append("p").attr("class", "over-hint")
-    .html("<b>Drag on the chart</b> to select a period · Double-click to clear · Hover to read values");
+    .html("<b>Drag on the graph</b> to select a period · Double-click to clear · Hover to read values");
 
   buildStripes(root);
 
