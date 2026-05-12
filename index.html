@@ -3,17 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CMIP6 D3 Visualization</title>
+  <title>CMIP6 Temperature Explorer</title>
   <link rel="stylesheet" href="./styles.css" />
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
   <main>
-    <h1>CMIP6 Global Temperature Anomaly Dashboard</h1>
-    <p>
-      Loads <code>./data/cmip6_timeseries.csv</code> if present, otherwise uses a small sample dataset.
-    </p>
-    <div id="dashboard"></div>
+    <header class="page-header">
+      <h1>Earth's Warming Fever, 1850–2014</h1>
+      <p class="lead">
+        A <b>temperature anomaly</b> is just how much warmer or cooler a given year was
+        compared to the pre-industrial average (1850-1900, before fossil fuels really took off).
+      </p>
+      <p class="lead">
+        Zero means that year matched the old normal. Positive means warmer than that baseline.
+        The faint line shows raw year-by-year data, and the bold purple line defaults to a
+        30-year rolling average, which is the standard climate scientists (IPCC) use to smooth
+        out short-term noise and see the actual long-term trend. The stripes below show each
+        year as a color: blue for cooler, red for warmer.
+      </p>
+      <p class="lead">
+        Drag across any part of the chart to select a time range. The distribution and
+        statistics below will update to reflect only the years you selected, so you can
+        compare different eras side by side.
+      </p>
+    </header>
+
+    <div class="controls">
+      <div class="ctrl-group">
+        <label class="ctrl-label" for="window-slider">Smoothing</label>
+        <input type="range" id="window-slider" min="1" max="50" value="30" step="1">
+        <span id="window-val" class="window-val">30</span>
+        <span class="ctrl-unit">year rolling mean</span>
+      </div>
+
+      <div class="ctrl-group toggles">
+        <label class="toggle-label">
+          <input type="checkbox" id="toggle-thresholds"> Paris 1.5°C target
+        </label>
+      </div>
+
+      <span id="range-label" class="range-label"></span>
+      <button id="reset-zoom" class="reset-btn" disabled>Clear selection</button>
+    </div>
+
+    <div id="viz-root"></div>
+
+    <footer class="data-note">
+      Temperature: CMIP6 historical simulation (NOAA/WCRP) · anomaly vs. 1850–1900 baseline
+    </footer>
   </main>
 
   <script src="./app.js"></script>

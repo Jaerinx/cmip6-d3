@@ -1,120 +1,236 @@
+/* ── Base ──────────────────────────────────────────────────────────────────── */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background: #fbfdff;
   color: #1f2937;
+  user-select: none;
 }
 
 main {
-  max-width: 1180px;
-  margin: 24px auto;
-  padding: 0 16px;
+  max-width: 980px;
+  margin: 28px auto;
+  padding: 0 16px 48px;
 }
 
-h1 {
-  margin-bottom: 8px;
-}
+/* ── Header ────────────────────────────────────────────────────────────────── */
+h1 { margin: 0 0 10px; font-size: 22px; line-height: 1.3; }
+h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+p  { margin: 0 0 12px; color: #4b5563; }
+.lead { font-size: 14px; line-height: 1.65; max-width: 820px; }
 
-p {
-  margin-top: 0;
-  margin-bottom: 18px;
-  color: #4b5563;
-}
-
-#dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 16px;
-}
-
-.chart-card {
-  background: #ffffff;
+/* ── Controls ──────────────────────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 14px 0 8px;
+  padding: 10px 16px;
+  background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 10px 12px 12px;
 }
 
-.chart-card h2 {
-  font-size: 16px;
-  margin: 0 0 4px;
+.ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.chart-card .subtitle {
+.ctrl-label { font-size: 12px; color: #6b7280; white-space: nowrap; }
+.ctrl-unit  { font-size: 12px; color: #9ca3af; }
+
+/* ── Sliders ───────────────────────────────────────────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #7c3aed;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.18);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #7c3aed;
+  border: none;
+  cursor: pointer;
+}
+
+.window-val { font-size: 15px; font-weight: 700; color: #7c3aed; min-width: 20px; text-align: right; }
+
+/* ── Toggle ────────────────────────────────────────────────────────────────── */
+.toggles { gap: 12px; }
+.toggle-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: #374151; cursor: pointer;
+}
+.toggle-label input[type="checkbox"] {
+  width: 14px; height: 14px; cursor: pointer; accent-color: #7c3aed;
+}
+
+.range-label { margin-left: auto; font-size: 12px; color: #6b7280; white-space: nowrap; }
+
+.reset-btn {
   font-size: 12px;
-  color: #6b7280;
-  margin: 0 0 8px;
+  padding: 4px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
 }
+.reset-btn:not(:disabled):hover { background: #f3f4f6; border-color: #9ca3af; }
+.reset-btn:disabled { opacity: 0.38; cursor: default; }
 
-.axis path,
-.axis line {
-  stroke: #9ca3af;
-}
+/* ── SVG: shared ───────────────────────────────────────────────────────────── */
+.axis path, .axis line { stroke: #d1d5db; }
+.axis text { font-size: 11px; fill: #6b7280; }
+.grid line { stroke: #f0f0f4; stroke-width: 1; }
+.grid path { stroke: none; }
+.label { font-size: 11px; fill: #6b7280; }
 
-.grid line {
-  stroke: #e5e7eb;
-}
-
-.line {
-  fill: none;
-  stroke: #ef4444;
-  stroke-width: 2.5;
-}
-
-.dot {
-  fill: #ef4444;
-}
-
-.label {
-  font-size: 12px;
-  fill: #374151;
-}
-
+/* ── Baseline reference ─────────────────────────────────────────────────────── */
 .zero-line {
   stroke: #9ca3af;
   stroke-dasharray: 4 3;
+  stroke-width: 1;
+}
+.zero-line-label {
+  font-size: 10px;
+  fill: #9ca3af;
+  font-style: italic;
 }
 
-.bar {
-  fill: #3b82f6;
+/* ── Temperature lines ─────────────────────────────────────────────────────── */
+.raw-line {
+  fill: none;
+  stroke: #c4b5fd;     /* faint lavender — noisy raw signal */
+  stroke-width: 1.2;
+  opacity: 0.6;
+}
+.roll-line {
+  fill: none;
+  stroke: #7c3aed;     /* purple — smoothed trend */
+  stroke-width: 2.8;
 }
 
-.bar-negative {
-  fill: #93c5fd;
+/* ── Paris threshold ───────────────────────────────────────────────────────── */
+.thresh-line {
+  stroke: #dc2626;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+}
+.thresh-label { font-size: 11px; fill: #dc2626; font-weight: 600; }
+
+/* ── Crosshair + hover dot ─────────────────────────────────────────────────── */
+.crosshair {
+  stroke: #374151;
+  stroke-width: 1;
+  stroke-dasharray: 3 2;
+}
+.hover-dot {
+  fill: #7c3aed;
+  stroke: #fff;
+  stroke-width: 2;
+}
+.mouse-overlay {
+  fill: none;
+  pointer-events: all;
+  cursor: crosshair;
 }
 
-.hist-bar {
-  fill: #60a5fa;
+/* ── Warming stripes ───────────────────────────────────────────────────────── */
+.stripes-svg { display: block; }
+
+.stripe { stroke: none; }
+
+/* White hover indicator line on stripes */
+.stripe-hover-line { fill: rgba(255,255,255,0.85); }
+
+/* Gradient legend below stripes */
+.legend-label { font-size: 10px; fill: #6b7280; }
+
+/* ── Brush on main chart ───────────────────────────────────────────────────── */
+.brush .selection {
+  fill: rgba(124,58,237,0.10);
+  stroke: #7c3aed;
+  stroke-width: 1.5;
+}
+.brush .handle { fill: #7c3aed; opacity: 0.5; }
+
+/* ── Stripe selection mirror ───────────────────────────────────────────────── */
+.stripe-selection {
+  fill: rgba(255,255,255,0.22);
+  stroke: rgba(255,255,255,0.8);
+  stroke-width: 1.5;
 }
 
-.delta-positive {
-  fill: #ef4444;
+/* ── Hint text ─────────────────────────────────────────────────────────────── */
+.over-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 4px 0 2px;
+  text-align: right;
 }
+.over-hint b { color: #6b7280; }
 
-.delta-negative {
-  fill: #3b82f6;
+/* ── Histogram ─────────────────────────────────────────────────────────────── */
+.hist-bar { opacity: 0.85; }
+
+/* ── Bottom row ────────────────────────────────────────────────────────────── */
+.bottom-row {
+  display: flex;
+  gap: 28px;
+  margin-top: 20px;
+  align-items: flex-start;
 }
+.hist-col { flex: 0 0 auto; width: 400px; }
+.stats-col { flex: 1; padding-top: 24px; }
 
-.data-point {
-  cursor: pointer;
-  transition: opacity 120ms ease;
+/* ── Stats ─────────────────────────────────────────────────────────────────── */
+dl { margin: 8px 0 0; }
+dt {
+  font-size: 10px; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-top: 16px;
 }
+dd { font-size: 20px; font-weight: 700; color: #1f2937; margin: 2px 0 0; }
+.stats-note { font-size: 12px; color: #9ca3af; margin-top: 20px; line-height: 1.6; }
+.subtitle   { font-size: 12px; color: #6b7280; margin: 0 0 4px; }
 
-.data-point:hover {
-  opacity: 0.75;
-}
-
+/* ── Tooltip ───────────────────────────────────────────────────────────────── */
 .tooltip {
   position: fixed;
   pointer-events: none;
   background: #111827;
   color: #f9fafb;
-  padding: 6px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  line-height: 1.35;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 7px 11px;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
   opacity: 0;
-  transform: translateY(2px);
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition: opacity 100ms ease;
   z-index: 30;
+  white-space: nowrap;
+}
+/* ── Footer ────────────────────────────────────────────────────────────────── */
+.data-note {
+  margin-top: 32px;
+  font-size: 11px;
+  color: #9ca3af;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
 }

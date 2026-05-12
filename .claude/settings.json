@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -m http.server 8787)",
+      "Bash(curl -s http://localhost:8787/)",
+      "Bash(curl -s http://localhost:8787/app.js)",
+      "Bash(node --input-type=module)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(node --check /Users/calvin/cmip6-d3/app.js)",
+      "Bash(open http://localhost:8787/)",
+      "Bash(awk -F',' 'NR>1 {if\\($2>max\\)max=$2} END{printf \"max anomaly: %s\\\\n\", max}' /Users/calvin/cmip6-d3/data/cmip6_timeseries.csv)",
+      "Bash(python3 -)"
+    ]
+  }
+}
