@@ -1,60 +1,117 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CMIP6 Temperature Explorer</title>
-  <link rel="stylesheet" href="./styles.css" />
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
-<body>
-  <main>
-    <header class="page-header">
-      <h1>Earth's Warming Fever, 1850–2014</h1>
-      <p class="lead">
-        A <b>temperature anomaly</b> measures how much warmer or cooler a given year was
-        compared to the pre-industrial average (1850–1900), the reference period before
-        large-scale industrialization began altering the climate.
-      </p>
-      <p class="lead">
-        A value of zero means that year matched the baseline. Positive values indicate warming
-        above it. The faint line shows raw year-by-year data, and the bold purple line defaults
-        to a 30-year rolling average, the standard used by climate scientists (IPCC) to filter
-        out short-term variability and reveal the underlying long-term trend. The stripes below
-        encode each year as a color: blue for cooler, red for warmer.
-      </p>
-      <p class="lead">
-        Drag across any part of the chart to select a time range. The distribution and
-        statistics below will update to reflect only the years you selected, so you can
-        compare different eras side by side.
-      </p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMIP6 Temperature Explorer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <h1>Earth's Warming Fever, 1850–2014</h1>
+        <p class="lead">
+          A <b>temperature anomaly</b> measures how much warmer or cooler a
+          given year was compared to the pre-industrial average (1850–1900), the
+          reference period before large-scale industrialization began altering
+          the climate.
+        </p>
+        <p class="lead">
+          A value of zero means that year matched the baseline. Positive values
+          indicate warming above it. The faint line shows raw year-by-year data,
+          and the bold purple line defaults to a 30-year rolling average, the
+          standard used by climate scientists (IPCC) to filter out short-term
+          variability and reveal the underlying long-term trend. The stripes
+          below encode each year as a color: blue for cooler, red for warmer.
+        </p>
+        <p class="lead">
+          Drag across any part of the chart to select a time range. The
+          distribution and statistics below will update to reflect only the
+          years you selected, so you can compare different eras side by side.
+        </p>
+      </header>
 
-    <div class="controls">
-      <div class="ctrl-group">
-        <label class="ctrl-label" for="window-slider">Smoothing</label>
-        <input type="range" id="window-slider" min="1" max="50" value="30" step="1">
-        <span id="window-val" class="window-val">30</span>
-        <span class="ctrl-unit">year rolling mean</span>
+      <div class="controls">
+        <div class="ctrl-group">
+          <label class="ctrl-label" for="window-slider">Smoothing</label>
+          <input
+            type="range"
+            id="window-slider"
+            min="1"
+            max="50"
+            value="30"
+            step="1"
+          />
+          <span id="window-val" class="window-val">30</span>
+          <span class="ctrl-unit">year rolling mean</span>
+        </div>
+
+        <div class="ctrl-group toggles">
+          <label class="toggle-label">
+            <input type="checkbox" id="toggle-thresholds" /> Paris 1.5°C target
+          </label>
+        </div>
+
+        <span id="range-label" class="range-label"></span>
+        <button id="reset-zoom" class="reset-btn" disabled>
+          Clear selection
+        </button>
       </div>
 
-      <div class="ctrl-group toggles">
-        <label class="toggle-label">
-          <input type="checkbox" id="toggle-thresholds"> Paris 1.5°C target
-        </label>
-      </div>
+      <div id="viz-root"></div>
 
-<span id="range-label" class="range-label"></span>
-      <button id="reset-zoom" class="reset-btn" disabled>Clear selection</button>
-    </div>
+      <h2>Design Rationale & Development</h2>
 
-    <div id="viz-root"></div>
+      <p class="lead">
+        When iterating for the ideal final visualization, our main goal was to
+        make complex environmental data more accessible and understandable to
+        the readers through clear visual encodings as well as interactivity. For
+        data transformation, we plotted the anomalies with the 18050-1900
+        baseline subtracted, which centered it at 0°C to compare to the
+        historical average. We used a line chart as our primary mark, with the
+        vertical position representing the temperature anomaly in Celsius over
+        time (horizontal position). To emphasize the long-term trend over time,
+        we created an interactive smoothing system for the reader to be able to
+        turn the data into an estimation to make the overall trend more clear.
+        We used this with a dual line system as the actual data was shown in
+        faint grey and the reader’s selection (smoothed or not), in a bolder
+        purple. Below the plot, we added Warming Stripes that use color as a
+        channel which use a blue to red scale to instantly associate to cold and
+        hot temperatures. The chart is fully interactive as the reader can drag
+        across a specific time period and the corresponding histogram of anomaly
+        temperatures (colored in the same cold-blue red-warm scheme) will
+        automatically adapt to show the selected range. Interactivity is an
+        essential design choice for our visualization as it uses brushing and
+        linking to the Period Statistics chart. Lastly, a key feature is the
+        Paris Agreement checkbox which adds a 1.5°C reference line in red and
+        dynamically scales the y-axis. This gives the reader the control to view
+        the data scaled and unscaled, while also being able to make comparisons
+        between the 30-year data and the 1.5°C line. We had initially started
+        with a singular line chart, realizing it was more effective to display
+        both smoothed and unsmoothed data on the same plot. While we initially
+        intended to simply show the average anomaly for the selected time
+        period, our last iteration included the addition of a histogram to
+        better represent the selected data.
+        </p><p class="lead">Our development process was a
+        collaborative effort which required around 20 people hours to complete
+        the project within the two-week scope. We divided up the work based on
+        technical strengths while all doing our best to adhere to the rubric.
+        One team member cleaned and grouped the data (as well as setting up the
+        GitHub & formatting the page) to be used by two team members who
+        developed the main D3 code to create the interactive visualizations, and
+        the last team member updated the page with the final write-up. After
+        finally figuring out how to access the dataset, the most time consuming
+        aspect was developing the histogram to be updated instantly upon line
+        plot brushing by the reader.
+      </p>
 
-    <footer class="data-note">
-      Temperature: CMIP6 historical simulation (NOAA/WCRP) · anomaly vs. 1850–1900 baseline
-    </footer>
-  </main>
+      <footer class="data-note">
+        Temperature: CMIP6 historical simulation (NOAA/WCRP) · anomaly vs.
+        1850–1900 baseline
+      </footer>
+    </main>
 
-  <script src="./app.js"></script>
-</body>
+    <script src="./app.js"></script>
+  </body>
 </html>
